@@ -1,0 +1,10 @@
+# Archivos del sistema operativo y dependencias temporales
+.DS_Store
+*.tmp
+*.log
+__pycache__/
+*.pyc
+
+# Respaldos de Office
+~$*.xlsm
+~$*.xlsx

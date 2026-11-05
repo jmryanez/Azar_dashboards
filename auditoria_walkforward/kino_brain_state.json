@@ -1,0 +1,25 @@
+{
+  "juego": "KINO_14_DE_25",
+  "total_sorteos_evaluados": 1723,
+  "pesos_adaptativos_aprendidos": {
+    "peso_arrastre_overlap": 0.25,
+    "peso_exclusion_11_ausentes": 0.25,
+    "peso_repulsion_phi": 0.25,
+    "peso_paridad_frecuencia": 0.25
+  },
+  "aciertos_promedio_walkforward": 8.077,
+  "esperanza_azar_teorica": 7.84,
+  "efectividad_vs_azar": "+3.0%",
+  "frecuencia_premios": {
+    "10_aciertos": 217,
+    "11_aciertos_premio": 49,
+    "12_aciertos_premio": 2,
+    "13_aciertos_premio": 0,
+    "14_aciertos_pleno": 0
+  },
+  "ultimo_sorteo_base": "1822",
+  "proximo_sorteo_proyectado": "#1823",
+  "fecha_proximo_sorteo": "Próximo sorteo oficial (22:30 CLT)",
+  "carton_maestro_proximo_sorteo": "01 - 04 - 05 - 09 - 10 - 11 - 12 - 14 - 15 - 17 - 18 - 19 - 20 - 22",
+  "ausentes_maestros_proximo_sorteo": "02 - 03 - 06 - 07 - 08 - 13 - 16 - 21 - 23 - 24 - 25"
+}

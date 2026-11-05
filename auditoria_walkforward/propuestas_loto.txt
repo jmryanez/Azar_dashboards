@@ -1,0 +1,18 @@
+REPORTE WALK-FORWARD Y AUTOAPRENDIZAJE: LOTO CHILE (6 de 41)
+======================================================================
+
+Sorteos auditados cronológicamente: 733
+Aciertos promedio observados: 0.864 bolitas (Esperanza azar: 0.878)
+Rendimiento comparativo: -1.6%
+
+PESOS ADAPTATIVOS APRENDIDOS (CONVERGENCIA SOFTMAX):
+  • peso_lift_hipergeometrico: 0.25
+  • peso_atraso_hazard: 0.25
+  • peso_paridad_hipergeometrica: 0.25
+  • peso_centralidad_frecuencia: 0.25
+
+----------------------------------------------------------------------
+
+ÚLTIMO SORTEO EVALUADO: #4585
+PRÓXIMO SORTEO PROYECTADO: #4586 (Próximo sorteo oficial (21:00 CLT))
+PROPUESTA MAESTRA PARA EL PRÓXIMO SORTEO: 05 - 09 - 14 - 20 - 33 - 37

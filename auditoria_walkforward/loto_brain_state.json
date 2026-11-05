@@ -1,0 +1,22 @@
+{
+  "juego": "LOTO_6_DE_41",
+  "total_sorteos_evaluados": 733,
+  "pesos_adaptativos_aprendidos": {
+    "peso_lift_hipergeometrico": 0.25,
+    "peso_atraso_hazard": 0.25,
+    "peso_paridad_hipergeometrica": 0.25,
+    "peso_centralidad_frecuencia": 0.25
+  },
+  "aciertos_promedio_walkforward": 0.864,
+  "esperanza_azar_teorica": 0.878,
+  "efectividad_vs_azar": "-1.6%",
+  "frecuencia_premios": {
+    "3_aciertos_ternas": 26,
+    "4_aciertos_cuaternas": 1,
+    "5_aciertos_quinas": 0
+  },
+  "ultimo_sorteo_base": "4585",
+  "proximo_sorteo_proyectado": "#4586",
+  "fecha_proximo_sorteo": "Próximo sorteo oficial (21:00 CLT)",
+  "propuesta_maestra_proximo_sorteo": "05 - 09 - 14 - 20 - 33 - 37"
+}

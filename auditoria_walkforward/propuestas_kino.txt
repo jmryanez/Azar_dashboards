@@ -1,0 +1,25 @@
+REPORTE WALK-FORWARD Y AUTOAPRENDIZAJE: KINO CHILE (14 de 25)
+======================================================================
+
+Sorteos auditados cronológicamente: 1723
+Aciertos promedio observados: 8.077 bolitas (Esperanza azar: 7.84)
+Rendimiento comparativo: +3.0%
+
+DISTRIBUCIÓN DE PREMIOS EN LA SIMULACIÓN:
+  • 11 Aciertos: 49 veces
+  • 12 Aciertos: 2 veces
+  • 13 Aciertos: 0 veces
+  • 14 Aciertos Pleno: 0 veces
+
+PESOS ADAPTATIVOS APRENDIDOS (CONVERGENCIA SOFTMAX):
+  • peso_arrastre_overlap: 0.25
+  • peso_exclusion_11_ausentes: 0.25
+  • peso_repulsion_phi: 0.25
+  • peso_paridad_frecuencia: 0.25
+
+----------------------------------------------------------------------
+
+ÚLTIMO SORTEO EVALUADO: #1822
+PRÓXIMO SORTEO PROYECTADO: #1823 (Próximo sorteo oficial (22:30 CLT))
+CARTÓN MAESTRO PROPUESTO: 01 - 04 - 05 - 09 - 10 - 11 - 12 - 14 - 15 - 17 - 18 - 19 - 20 - 22
+11 AUSENTES DUALES (DESCARTE): 02 - 03 - 06 - 07 - 08 - 13 - 16 - 21 - 23 - 24 - 25
