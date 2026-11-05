@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <linearGradient id="bg-grad" x1="15%" y1="85%" x2="85%" y2="15%">
+      <stop offset="0%" stop-color="#f97316" />
+      <stop offset="45%" stop-color="#f43f5e" />
+      <stop offset="100%" stop-color="#7c3aed" />
+    </linearGradient>
+  </defs>
+  <rect x="6" y="6" width="116" height="116" rx="34" fill="url(#bg-grad)" />
+  <!-- Eje L -->
+  <path d="M 38 42 L 38 84 C 38 89.5 42.5 94 48 94 L 92 94" 
+        fill="none" stroke="#ffffff" stroke-width="9.5" stroke-linecap="round" stroke-linejoin="round" />
+  <!-- Línea de gráfico ascendente -->
+  <path d="M 48 76 L 64 54 L 76 66 L 90 42" 
+        fill="none" stroke="#ffffff" stroke-width="9.5" stroke-linecap="round" stroke-linejoin="round" />
+</svg>
