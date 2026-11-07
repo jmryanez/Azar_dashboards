@@ -2,21 +2,35 @@
   "juego": "LOTO_6_DE_41",
   "total_sorteos_evaluados": 733,
   "pesos_adaptativos_aprendidos": {
-    "peso_lift_hipergeometrico": 0.25,
-    "peso_atraso_hazard": 0.25,
-    "peso_paridad_hipergeometrica": 0.25,
-    "peso_centralidad_frecuencia": 0.25
+    "peso_frecuencia_global": 0.25,
+    "peso_inercia_reciente": 0.25,
+    "peso_hazard_kde": 0.25,
+    "peso_grafo_coocurrencia": 0.25
   },
-  "aciertos_promedio_walkforward": 0.864,
-  "esperanza_azar_teorica": 0.878,
-  "efectividad_vs_azar": "-1.6%",
-  "frecuencia_premios": {
+  "jugada_titular_individual": {
+    "aciertos_promedio": 0.889,
+    "esperanza_azar": 0.878,
     "3_aciertos_ternas": 26,
-    "4_aciertos_cuaternas": 1,
-    "5_aciertos_quinas": 0
+    "4_aciertos_cuaternas": 3,
+    "5_aciertos_quinas": 0,
+    "6_aciertos_loto": 0
+  },
+  "portafolio_5_boletos": {
+    "aciertos_maximos_promedio": 1.611,
+    "3_aciertos_ternas": 99,
+    "4_aciertos_cuaternas": 12,
+    "5_aciertos_quinas": 0,
+    "6_aciertos_loto": 0
   },
   "ultimo_sorteo_base": "4585",
   "proximo_sorteo_proyectado": "#4586",
   "fecha_proximo_sorteo": "Próximo sorteo oficial (21:00 CLT)",
-  "propuesta_maestra_proximo_sorteo": "05 - 09 - 14 - 20 - 33 - 37"
+  "propuesta_maestra_titular": "12 - 15 - 16 - 22 - 33 - 37",
+  "portafolio_proximo_sorteo": [
+    "12 - 15 - 16 - 22 - 33 - 37",
+    "09 - 11 - 14 - 22 - 33 - 37",
+    "09 - 12 - 15 - 16 - 38 - 40",
+    "09 - 15 - 16 - 25 - 37 - 38",
+    "02 - 11 - 12 - 33 - 37 - 40"
+  ]
 }

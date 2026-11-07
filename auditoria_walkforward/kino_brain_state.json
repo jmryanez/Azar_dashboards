@@ -3,23 +3,39 @@
   "total_sorteos_evaluados": 1723,
   "pesos_adaptativos_aprendidos": {
     "peso_arrastre_overlap": 0.25,
+    "peso_inercia_reciente": 0.25,
     "peso_exclusion_11_ausentes": 0.25,
-    "peso_repulsion_phi": 0.25,
-    "peso_paridad_frecuencia": 0.25
+    "peso_transicion_markov": 0.25
   },
-  "aciertos_promedio_walkforward": 8.077,
-  "esperanza_azar_teorica": 7.84,
-  "efectividad_vs_azar": "+3.0%",
-  "frecuencia_premios": {
-    "10_aciertos": 217,
-    "11_aciertos_premio": 49,
-    "12_aciertos_premio": 2,
+  "carton_titular_individual": {
+    "aciertos_promedio": 8.007,
+    "esperanza_azar": 7.84,
+    "10_aciertos": 197,
+    "11_aciertos_premio": 43,
+    "12_aciertos_premio": 5,
     "13_aciertos_premio": 0,
-    "14_aciertos_pleno": 0
+    "14_aciertos_pleno": 0,
+    "15_aciertos_pleno": 0
+  },
+  "portafolio_5_cartones": {
+    "aciertos_maximos_promedio": 9.149,
+    "10_aciertos": 543,
+    "11_aciertos_premio": 131,
+    "12_aciertos_premio": 19,
+    "13_aciertos_premio": 0,
+    "14_aciertos_pleno": 0,
+    "15_aciertos_pleno": 0
   },
   "ultimo_sorteo_base": "1822",
   "proximo_sorteo_proyectado": "#1823",
   "fecha_proximo_sorteo": "Próximo sorteo oficial (22:30 CLT)",
-  "carton_maestro_proximo_sorteo": "01 - 04 - 05 - 09 - 10 - 11 - 12 - 14 - 15 - 17 - 18 - 19 - 20 - 22",
-  "ausentes_maestros_proximo_sorteo": "02 - 03 - 06 - 07 - 08 - 13 - 16 - 21 - 23 - 24 - 25"
+  "carton_maestro_titular": "01 - 03 - 04 - 06 - 07 - 08 - 09 - 15 - 17 - 18 - 19 - 22 - 24 - 25",
+  "ausentes_maestros_titular": "02 - 05 - 10 - 11 - 12 - 13 - 14 - 16 - 20 - 21 - 23",
+  "portafolio_proximo_sorteo": [
+    "01 - 03 - 04 - 06 - 07 - 08 - 09 - 15 - 17 - 18 - 19 - 22 - 24 - 25",
+    "01 - 02 - 03 - 04 - 06 - 07 - 08 - 09 - 11 - 12 - 15 - 17 - 19 - 22",
+    "01 - 02 - 03 - 04 - 05 - 08 - 09 - 11 - 12 - 14 - 15 - 17 - 19 - 22",
+    "01 - 02 - 03 - 04 - 06 - 08 - 09 - 15 - 17 - 18 - 19 - 22 - 24 - 25",
+    "02 - 04 - 05 - 10 - 11 - 12 - 13 - 14 - 15 - 16 - 19 - 20 - 21 - 23"
+  ]
 }

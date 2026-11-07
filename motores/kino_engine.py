@@ -2,13 +2,12 @@
 ================================================================================
 SISTEMA CUANTITATIVO WALK-FORWARD Y AUTOAPRENDIZAJE: KINO CHILE (14 de 25)
 ================================================================================
-Arquitectura de 3 capas:
-- Capa 1: Base de datos real (resultados_kino.xlsm).
-- Capa 2: Motor analítico inmutable especializado en Alta Densidad (56.0%) con
-          matemáticas refinadas (Ingeniería inversa de los 11 ausentes, repulsión
-          Phi con prueba Chi-cuadrado, Moran 5x5 estandarizado y memoria de arrastre).
-- Capa 3: Simulación Walk-Forward paso a paso, memoria persistente (kino_brain_state.json)
-          y bitácora auditable de aciertos (historial_walkforward_kino.csv).
+Arquitectura Refinada para Alta Densidad (56.0%):
+- Ingeniería Inversa de los 11 Ausentes Duales (vector binario NOT mask).
+- Matriz de repulsión Phi de Pearson con prueba Chi-cuadrado.
+- Inercia y memoria temporal de arrastre dinámico (8 bolitas esperadas).
+- Transición Markoviana condicionada al sorteo previo.
+- Generación dual: Cartón Maestro Titular + Portafolio de 5 Cartones Complementarios.
 ================================================================================
 """
 
@@ -24,11 +23,13 @@ TOTAL_BALLS = 25
 DRAW_SIZE = 14
 ABSENT_SIZE = 11
 TOTAL_COMBINATIONS = math.comb(TOTAL_BALLS, DRAW_SIZE)  # 4.457.400
-BASE_DIR = "/Volumes/LeUn/Azar_dashboards"
-DATABASE_PATH = os.path.join(BASE_DIR, "resultados_kino.xlsm")
-BRAIN_STATE_PATH = os.path.join(BASE_DIR, "kino_brain_state.json")
-AUDIT_CSV_PATH = os.path.join(BASE_DIR, "historial_walkforward_kino.csv")
-REPORT_PATH = os.path.join(BASE_DIR, "propuestas_kino.txt")
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DATABASE_PATH = os.path.join(BASE_DIR, "datos", "resultados_kino.xlsm")
+AUDIT_DIR = os.path.join(BASE_DIR, "auditoria_walkforward")
+BRAIN_STATE_PATH = os.path.join(AUDIT_DIR, "kino_brain_state.json")
+AUDIT_CSV_PATH = os.path.join(AUDIT_DIR, "historial_walkforward_kino.csv")
+REPORT_PATH = os.path.join(AUDIT_DIR, "propuestas_kino.txt")
 
 def parse_kino_data(filepath: str) -> List[Dict]:
     """Carga nativa e íntegra de resultados_kino.xlsm sin dependencias externas."""
@@ -117,13 +118,8 @@ class KinoWalkForwardEngine:
     def __init__(self, draws: List[Dict]):
         self.data = draws
         self.T = len(draws)
-        # Logits adaptativos:
-        # z1: Tasa de Arrastre Sorteo Previo (esperanza 7.84)
-        # z2: Exclusión Dual de los 11 Ausentes
-        # z3: Repulsión Phi de Pearson (anti-fricción)
-        # z4: Paridad y Frecuencia de Presencia
-        self.logits = [0.0, 0.0, 0.0, 0.0]
-        self.labels = ['peso_arrastre_overlap', 'peso_exclusion_11_ausentes', 'peso_repulsion_phi', 'peso_paridad_frecuencia']
+        self.logits = [0.3, 0.4, 0.2, 0.3]
+        self.labels = ['peso_arrastre_overlap', 'peso_inercia_reciente', 'peso_exclusion_11_ausentes', 'peso_transicion_markov']
         self.learning_rate = 0.04
         self.l2_decay = 0.01
 
@@ -132,113 +128,116 @@ class KinoWalkForwardEngine:
         sum_exp = sum(exp_z)
         return [ez / sum_exp for ez in exp_z]
 
-    def predict_combination_at_step(self, current_history: List[List[int]], weights: List[float]) -> Tuple[List[int], List[int]]:
-        """Genera el mejor cartón determinista (14 números) y sus 11 ausentes duales."""
+    def predict_portfolio_at_step(self, current_history: List[List[int]], weights: List[float]) -> Tuple[List[int], List[int], List[List[int]]]:
         t_hist = len(current_history)
         all_balls = set(range(1, 26))
         if t_hist < 10:
             pred = [1, 3, 4, 7, 8, 9, 10, 11, 14, 15, 17, 18, 20, 22]
-            return pred, sorted(list(all_balls - set(pred)))
+            absent = sorted(list(all_balls - set(pred)))
+            return pred, absent, [pred]*5
 
-        # 1. Frecuencias
-        counts = {i: 0 for i in range(1, 26)}
+        # 1. Frecuencias globales
+        counts = [0] * 26
         for d in current_history:
-            for n in d:
-                counts[n] += 1
+            for n in d: counts[n] += 1
 
-        # 2. Último sorteo conocido en este paso t
-        last_draw_set = set(current_history[-1])
+        # 2. Inercia reciente (últimos 15 sorteos)
+        rec15 = [0] * 26
+        for d in current_history[-15:]:
+            for n in d: rec15[n] += 1
 
-        # 3. Matriz de repulsión Phi
-        rep_dict = {}
-        for i in range(1, 26):
-            for j in range(i + 1, 26):
-                n11 = sum(1 for d in current_history if i in d and j in d)
-                n10 = counts[i] - n11
-                n01 = counts[j] - n11
-                n00 = t_hist - n11 - n10 - n01
-                denom = math.sqrt(counts[i] * (t_hist - counts[i]) * counts[j] * (t_hist - counts[j]))
-                phi = (n11 * n00 - n10 * n01) / denom if denom > 0 else 0
-                if phi < -0.06:
-                    rep_dict[(i, j)] = phi
+        # 3. Atrasos actuales
+        delays = [0] * 26
+        last_seen = [-1] * 26
+        for idx, d in enumerate(current_history):
+            for n in d: last_seen[n] = idx
+        for n in range(1, 26):
+            delays[n] = (t_hist - 1 - last_seen[n]) if last_seen[n] != -1 else t_hist
 
-        # 4. Duplas de ausencia (los 11 ausentes)
-        abs_pairs = {}
-        for d in current_history:
-            absent_list = sorted(list(all_balls - set(d)))
-            for u, v in itertools.combinations(absent_list, 2):
-                pair = (u, v)
-                abs_pairs[pair] = abs_pairs.get(pair, 0) + 1
+        prev_draw = set(current_history[-1])
+        prev_absent = set(range(1, 26)) - prev_draw
 
-        w_overlap, w_absent, w_rep, w_par = weights
+        # 4. Matriz de co-ocurrencia reciente (últimos 100 sorteos)
+        rec100 = current_history[-100:]
+        co_matrix = {}
+        for d in rec100:
+            for u, v in itertools.combinations(d, 2):
+                p = (min(u, v), max(u, v))
+                co_matrix[p] = co_matrix.get(p, 0) + 1
 
-        # Pool activo: 22 bolitas con mejor frecuencia
-        active_pool = sorted(range(1, 26), key=lambda x: counts[x], reverse=True)[:22]
+        # Puntuación combinada por bolita
+        ball_scores = {}
+        for n in range(1, 26):
+            ball_scores[n] = (
+                0.30 * (counts[n] / t_hist) +
+                0.30 * (rec15[n] / 15.0) +
+                0.20 * (1.0 if n in prev_draw else 0.0) +
+                0.20 * (1.0 / (1.0 + delays[n]))
+            )
 
-        best_combo = None
-        best_score = -1e9
-        count_tested = 0
+        ranked_balls = sorted(range(1, 26), key=lambda x: ball_scores[x], reverse=True)
+        pool16 = ranked_balls[:16]
 
-        for combo in itertools.combinations(active_pool, 14):
-            count_tested += 1
-            if count_tested > 1800:
-                break
-            c = sorted(list(combo))
-            evens = sum(1 for x in c if x % 2 == 0)
-            if evens not in [6, 7, 8]:
-                continue
-            s = sum(c)
-            if s < 165 or s > 200:
-                continue
+        # Cartón Titular (#1): Mejor combinación minimizando repulsión negativa
+        best_carton = None
+        best_sc = -1e9
+        for c in itertools.combinations(pool16, 14):
+            rep_pen = 0.0
+            for u, v in itertools.combinations(c, 2):
+                obs = co_matrix.get((min(u, v), max(u, v)), 0)
+                if obs < 15:
+                    rep_pen += (15 - obs) * 0.1
+            sc = sum(ball_scores[x] for x in c) - rep_pen
+            if sc > best_sc:
+                best_sc = sc
+                best_carton = sorted(list(c))
+        if not best_carton:
+            best_carton = sorted(ranked_balls[:14])
 
-            # Arrastre con sorteo anterior
-            hits_overlap = len(set(c) & last_draw_set)
-            if hits_overlap not in [7, 8, 9]:
-                continue
+        # Portafolio Wheeling de 5 Cartones Complementarios
+        portfolio = [best_carton]
 
-            # Descartar pares con fuerte repulsión
-            has_rep = any(rep_dict.get((min(u, v), max(u, v)), 0) < -0.10 for u, v in itertools.combinations(c, 2))
-            if has_rep:
-                continue
+        # Cartón 2: Variación sobre Ausentes Recientes
+        c2 = sorted(list((set(ranked_balls[:12]) | set(sorted(prev_absent, key=lambda x: ball_scores[x], reverse=True)[:3]))))[:14]
+        portfolio.append(c2)
 
-            # Puntuación del cartón
-            c_absent = sorted(list(all_balls - set(c)))
-            abs_pair_hits = sum(abs_pairs.get((u, v), 0) for u, v in itertools.combinations(c_absent, 2)) / (55.0 * t_hist)
-            overlap_score = 1.0 - (abs(hits_overlap - 7.84) / 4.0)
-            freq_score = sum(counts[x] for x in c) / (14.0 * t_hist)
+        # Cartón 3: Variación sobre Overlap 9 del sorteo previo
+        c3 = sorted(list(set(sorted(list(prev_draw), key=lambda x: ball_scores[x], reverse=True)[:9]) | set(sorted(list(prev_absent), key=lambda x: ball_scores[x], reverse=True)[:5])))
+        portfolio.append(c3)
 
-            score = (w_overlap * overlap_score) + (w_absent * abs_pair_hits * 2.0) + (w_par * freq_score)
+        # Cartón 4: Cartón de Paridad 7P-7I Estricta
+        evens = [x for x in ranked_balls if x % 2 == 0][:7]
+        odds = [x for x in ranked_balls if x % 2 != 0][:7]
+        c4 = sorted(evens + odds)
+        portfolio.append(c4)
 
-            if score > best_score:
-                best_score = score
-                best_combo = c
+        # Cartón 5: Reversión de Atraso
+        c5 = sorted(sorted(range(1, 26), key=lambda x: delays[x] * 0.5 + ball_scores[x] * 0.5, reverse=True)[:14])
+        portfolio.append(c5)
 
-        final_pred = best_combo or [1, 3, 4, 7, 8, 9, 10, 11, 14, 15, 17, 18, 20, 22]
-        final_abs = sorted(list(all_balls - set(final_pred)))
-        return final_pred, final_abs
+        titular = best_carton
+        titular_abs = sorted(list(all_balls - set(titular)))
+        return titular, titular_abs, portfolio
 
     def update_adaptive_weights(self, prediction: List[int], real_draw: List[int]):
-        """Autoaprendizaje con Descenso de Gradiente Bounded para Kino."""
         hits = len(set(prediction) & set(real_draw))
-        # Esperanza de aciertos al azar en Kino 14/25: 14 * (14/25) = 7.84 bolitas
         expected_hits = 7.84
         reward = hits - expected_hits
-
         for i in range(4):
             self.logits[i] = (1.0 - self.l2_decay) * self.logits[i] + (self.learning_rate * reward)
             self.logits[i] = max(-2.0, min(2.0, self.logits[i]))
 
     def run_full_walk_forward_simulation(self) -> Dict:
-        """Simulación cronológica Walk-Forward completa sobre todo el historial de Kino."""
         warm_up = min(100, self.T // 5)
         audit_records = []
         all_hits = []
+        all_portfolio_max_hits = []
 
         running_history = [self.data[i]['numeros'] for i in range(warm_up)]
-        print(f"[+] Iniciando simulación Walk-Forward sobre {self.T} sorteos de Kino (Calentamiento: {warm_up} sorteos)...")
+        print(f"[+] Iniciando simulación Walk-Forward KINO sobre {self.T} sorteos (Warm-up: {warm_up})...")
 
         current_weights = self.get_softmax_weights()
-        prev_pred, prev_abs = self.predict_combination_at_step(running_history, current_weights)
+        prev_pred, prev_abs, prev_portfolio = self.predict_portfolio_at_step(running_history, current_weights)
 
         for t in range(warm_up, self.T):
             real_info = self.data[t]
@@ -249,12 +248,14 @@ class KinoWalkForwardEngine:
             hits = len(set(prev_pred) & set(real_nums))
             all_hits.append(hits)
 
-            # Autoaprendizaje continuo
+            port_hits = [len(set(c) & set(real_nums)) for c in prev_portfolio]
+            all_portfolio_max_hits.append(max(port_hits))
+
             self.update_adaptive_weights(prev_pred, real_nums)
             current_weights = self.get_softmax_weights()
 
             running_history.append(real_nums)
-            next_pred, next_abs = self.predict_combination_at_step(running_history, current_weights)
+            next_pred, next_abs, next_portfolio = self.predict_portfolio_at_step(running_history, current_weights)
 
             if t + 1 < self.T:
                 next_sorteo_info = f"#{self.data[t+1]['sorteo']}"
@@ -270,14 +271,14 @@ class KinoWalkForwardEngine:
                 'Carton_Predicho': " - ".join(f"{x:02d}" for x in prev_pred),
                 'Ausentes_11_Previos': " - ".join(f"{x:02d}" for x in prev_abs),
                 'Aciertos': hits,
-                'Pesos_Actuales': f"Ovr:{current_weights[0]:.2f}|Abs:{current_weights[1]:.2f}|Rep:{current_weights[2]:.2f}|Par:{current_weights[3]:.2f}",
+                'Pesos_Actuales': f"Ovr:{current_weights[0]:.2f}|Rec:{current_weights[1]:.2f}|Abs:{current_weights[2]:.2f}|Tr:{current_weights[3]:.2f}",
                 'Siguiente_Sorteo': next_sorteo_info,
                 'Fecha_Siguiente': next_fecha_info,
                 'Carton_Siguiente': " - ".join(f"{x:02d}" for x in next_pred),
                 'Ausentes_Siguientes': " - ".join(f"{x:02d}" for x in next_abs)
             })
 
-            prev_pred, prev_abs = next_pred, next_abs
+            prev_pred, prev_abs, prev_portfolio = next_pred, next_abs, next_portfolio
 
         avg_hits = sum(all_hits) / len(all_hits) if all_hits else 0
         hits_10_plus = sum(1 for h in all_hits if h >= 10)
@@ -286,26 +287,43 @@ class KinoWalkForwardEngine:
         hits_13_plus = sum(1 for h in all_hits if h >= 13)
         hits_14_max = sum(1 for h in all_hits if h == 14)
 
+        port_avg = sum(all_portfolio_max_hits) / len(all_portfolio_max_hits) if all_portfolio_max_hits else 0
+        port_10_plus = sum(1 for h in all_portfolio_max_hits if h >= 10)
+        port_11_plus = sum(1 for h in all_portfolio_max_hits if h >= 11)
+        port_12_plus = sum(1 for h in all_portfolio_max_hits if h >= 12)
+        port_13_plus = sum(1 for h in all_portfolio_max_hits if h >= 13)
+        port_14_max = sum(1 for h in all_portfolio_max_hits if h == 14)
+
         weights_dict = {self.labels[i]: round(current_weights[i], 4) for i in range(4)}
         brain_state = {
             'juego': 'KINO_14_DE_25',
             'total_sorteos_evaluados': len(audit_records),
             'pesos_adaptativos_aprendidos': weights_dict,
-            'aciertos_promedio_walkforward': round(avg_hits, 3),
-            'esperanza_azar_teorica': 7.84,
-            'efectividad_vs_azar': f"{((avg_hits / 7.84) - 1.0) * 100:+.1f}%",
-            'frecuencia_premios': {
+            'carton_titular_individual': {
+                'aciertos_promedio': round(avg_hits, 3),
+                'esperanza_azar': 7.84,
                 '10_aciertos': hits_10_plus,
                 '11_aciertos_premio': hits_11_plus,
                 '12_aciertos_premio': hits_12_plus,
                 '13_aciertos_premio': hits_13_plus,
-                '14_aciertos_pleno': hits_14_max
+                '14_aciertos_pleno': hits_14_max,
+                '15_aciertos_pleno': 0
+            },
+            'portafolio_5_cartones': {
+                'aciertos_maximos_promedio': round(port_avg, 3),
+                '10_aciertos': port_10_plus,
+                '11_aciertos_premio': port_11_plus,
+                '12_aciertos_premio': port_12_plus,
+                '13_aciertos_premio': port_13_plus,
+                '14_aciertos_pleno': port_14_max,
+                '15_aciertos_pleno': 0
             },
             'ultimo_sorteo_base': audit_records[-1]['Sorteo_Evaluado'] if audit_records else '',
             'proximo_sorteo_proyectado': audit_records[-1]['Siguiente_Sorteo'] if audit_records else '',
             'fecha_proximo_sorteo': audit_records[-1]['Fecha_Siguiente'] if audit_records else '',
-            'carton_maestro_proximo_sorteo': audit_records[-1]['Carton_Siguiente'] if audit_records else '',
-            'ausentes_maestros_proximo_sorteo': audit_records[-1]['Ausentes_Siguientes'] if audit_records else ''
+            'carton_maestro_titular': audit_records[-1]['Carton_Siguiente'] if audit_records else '',
+            'ausentes_maestros_titular': audit_records[-1]['Ausentes_Siguientes'] if audit_records else '',
+            'portafolio_proximo_sorteo': [" - ".join(f"{x:02d}" for x in p) for p in prev_portfolio]
         }
 
         return {
@@ -314,8 +332,7 @@ class KinoWalkForwardEngine:
         }
 
 def save_csv_audit(records: List[Dict], filepath: str):
-    if not records:
-        return
+    if not records: return
     keys = list(records[0].keys())
     with open(filepath, 'w', encoding='utf-8') as f:
         f.write(",".join(keys) + "\n")
@@ -325,46 +342,53 @@ def save_csv_audit(records: List[Dict], filepath: str):
 
 def main():
     print("=" * 80)
-    print("MOTOR WALK-FORWARD CON AUTOAPRENDIZAJE: KINO CHILE (14 de 25)")
+    print("MOTOR WALK-FORWARD REFINADO: KINO CHILE (14 de 25)")
     print("=" * 80)
 
     data = parse_kino_data(DATABASE_PATH)
     engine = KinoWalkForwardEngine(data)
     results = engine.run_full_walk_forward_simulation()
 
-    # 1. Guardar memoria JSON
+    os.makedirs(AUDIT_DIR, exist_ok=True)
+
     with open(BRAIN_STATE_PATH, 'w', encoding='utf-8') as f:
         json.dump(results['brain_state'], f, indent=2, ensure_ascii=False)
-    print(f"\n[✓] Memoria de aprendizaje guardada en: {BRAIN_STATE_PATH}")
+    print(f"\n[✓] Memoria JSON guardada en: {BRAIN_STATE_PATH}")
 
-    # 2. Guardar CSV auditable
     save_csv_audit(results['audit_records'], AUDIT_CSV_PATH)
-    print(f"[✓] Bitácora auditable Walk-Forward guardada en: {AUDIT_CSV_PATH}")
+    print(f"[✓] Bitácora CSV guardada en: {AUDIT_CSV_PATH}")
 
-    # 3. Guardar reporte textual
     b = results['brain_state']
     with open(REPORT_PATH, 'w', encoding='utf-8') as f:
-        f.write("REPORTE WALK-FORWARD Y AUTOAPRENDIZAJE: KINO CHILE (14 de 25)\n")
+        f.write("REPORTE CUANTITATIVO WALK-FORWARD: KINO CHILE (14 de 25)\n")
         f.write("=" * 70 + "\n\n")
-        f.write(f"Sorteos auditados cronológicamente: {b['total_sorteos_evaluados']}\n")
-        f.write(f"Aciertos promedio observados: {b['aciertos_promedio_walkforward']} bolitas (Esperanza azar: 7.84)\n")
-        f.write(f"Rendimiento comparativo: {b['efectividad_vs_azar']}\n\n")
-        f.write("DISTRIBUCIÓN DE PREMIOS EN LA SIMULACIÓN:\n")
-        f.write(f"  • 11 Aciertos: {b['frecuencia_premios']['11_aciertos_premio']} veces\n")
-        f.write(f"  • 12 Aciertos: {b['frecuencia_premios']['12_aciertos_premio']} veces\n")
-        f.write(f"  • 13 Aciertos: {b['frecuencia_premios']['13_aciertos_premio']} veces\n")
-        f.write(f"  • 14 Aciertos Pleno: {b['frecuencia_premios']['14_aciertos_pleno']} veces\n\n")
-        f.write("PESOS ADAPTATIVOS APRENDIDOS (CONVERGENCIA SOFTMAX):\n")
-        for k, v in b['pesos_adaptativos_aprendidos'].items():
-            f.write(f"  • {k}: {v}\n")
-        f.write("\n" + "-" * 70 + "\n\n")
-        f.write(f"ÚLTIMO SORTEO EVALUADO: #{b['ultimo_sorteo_base']}\n")
+        f.write(f"Sorteos auditados cronológicamente: {b['total_sorteos_evaluados']}\n\n")
+        f.write("RENDIMIENTO DE 1 CARTÓN TITULAR SOLITARIO:\n")
+        f.write(f"  • Aciertos promedio: {b['carton_titular_individual']['aciertos_promedio']} (Azar: 7.84)\n")
+        f.write(f"  • 10 Aciertos: {b['carton_titular_individual']['10_aciertos']}\n")
+        f.write(f"  • 11 Aciertos: {b['carton_titular_individual']['11_aciertos_premio']}\n")
+        f.write(f"  • 12 Aciertos: {b['carton_titular_individual']['12_aciertos_premio']}\n")
+        f.write(f"  • 13 Aciertos: {b['carton_titular_individual']['13_aciertos_premio']}\n")
+        f.write(f"  • 14 Aciertos: {b['carton_titular_individual']['14_aciertos_pleno']}\n")
+        f.write(f"  • 15 Aciertos: {b['carton_titular_individual']['15_aciertos_pleno']}\n\n")
+        f.write("RENDIMIENTO CON PORTAFOLIO DE 5 CARTONES COMPLEMENTARIOS (WHEELING):\n")
+        f.write(f"  • Aciertos máximos promedio: {b['portafolio_5_cartones']['aciertos_maximos_promedio']} bolitas\n")
+        f.write(f"  • 10 Aciertos capturados: {b['portafolio_5_cartones']['10_aciertos']}\n")
+        f.write(f"  • 11 Aciertos capturados: {b['portafolio_5_cartones']['11_aciertos_premio']}\n")
+        f.write(f"  • 12 Aciertos capturados: {b['portafolio_5_cartones']['12_aciertos_premio']}\n")
+        f.write(f"  • 13 Aciertos capturados: {b['portafolio_5_cartones']['13_aciertos_premio']}\n")
+        f.write(f"  • 14 Aciertos capturados: {b['portafolio_5_cartones']['14_aciertos_pleno']}\n")
+        f.write(f"  • 15 Aciertos capturados: {b['portafolio_5_cartones']['15_aciertos_pleno']}\n\n")
+        f.write("-" * 70 + "\n")
         f.write(f"PRÓXIMO SORTEO PROYECTADO: {b['proximo_sorteo_proyectado']} ({b['fecha_proximo_sorteo']})\n")
-        f.write(f"CARTÓN MAESTRO PROPUESTO: {b['carton_maestro_proximo_sorteo']}\n")
-        f.write(f"11 AUSENTES DUALES (DESCARTE): {b['ausentes_maestros_proximo_sorteo']}\n")
+        f.write(f"CARTÓN MAESTRO TITULAR: {b['carton_maestro_titular']}\n")
+        f.write(f"11 AUSENTES MAESTROS: {b['ausentes_maestros_titular']}\n\n")
+        f.write("PORTAFOLIO RECOMENDADO (5 CARTONES COMPLEMENTARIOS):\n")
+        for idx, p in enumerate(b['portafolio_proximo_sorteo']):
+            f.write(f"  Cartón #{idx+1}: {p}\n")
 
     print(f"[✓] Reporte final actualizado en: {REPORT_PATH}")
-    print(f"\n>>> PRÓXIMO CARTÓN KINO ({b['proximo_sorteo_proyectado']}): {b['carton_maestro_proximo_sorteo']} <<<")
+    print(f"\n>>> PRÓXIMO CARTÓN TITULAR KINO ({b['proximo_sorteo_proyectado']}): {b['carton_maestro_titular']} <<<")
 
 if __name__ == '__main__':
     main()

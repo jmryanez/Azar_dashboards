@@ -1,18 +1,27 @@
-REPORTE WALK-FORWARD Y AUTOAPRENDIZAJE: LOTO CHILE (6 de 41)
+REPORTE CUANTITATIVO WALK-FORWARD: LOTO CHILE (6 de 41)
 ======================================================================
 
-Sorteos auditados cronológicamente: 733
-Aciertos promedio observados: 0.864 bolitas (Esperanza azar: 0.878)
-Rendimiento comparativo: -1.6%
+Sorteos auditados: 733
 
-PESOS ADAPTATIVOS APRENDIDOS (CONVERGENCIA SOFTMAX):
-  • peso_lift_hipergeometrico: 0.25
-  • peso_atraso_hazard: 0.25
-  • peso_paridad_hipergeometrica: 0.25
-  • peso_centralidad_frecuencia: 0.25
+RENDIMIENTO DE 1 JUGADA TITULAR SOLITARIA:
+  • Aciertos promedio: 0.889 bolitas (Azar: 0.878)
+  • 3 Aciertos (Ternas): 26
+  • 4 Aciertos (Cuaternas): 3
+  • 5 Aciertos (Quinas): 0
+  • 6 Aciertos (LOTO): 0
+
+RENDIMIENTO CON PORTAFOLIO DE 5 JUGADAS COMPLEMENTARIAS (WHEELING):
+  • Aciertos máximos promedio: 1.611 bolitas
+  • 3 Aciertos capturados: 99
+  • 4 Aciertos capturados: 12
 
 ----------------------------------------------------------------------
-
-ÚLTIMO SORTEO EVALUADO: #4585
 PRÓXIMO SORTEO PROYECTADO: #4586 (Próximo sorteo oficial (21:00 CLT))
-PROPUESTA MAESTRA PARA EL PRÓXIMO SORTEO: 05 - 09 - 14 - 20 - 33 - 37
+PROPUESTA MAESTRA TITULAR: 12 - 15 - 16 - 22 - 33 - 37
+
+PORTAFOLIO RECOMENDADO (5 JUGADAS COMPLEMENTARIAS):
+  Jugada #1: 12 - 15 - 16 - 22 - 33 - 37
+  Jugada #2: 09 - 11 - 14 - 22 - 33 - 37
+  Jugada #3: 09 - 12 - 15 - 16 - 38 - 40
+  Jugada #4: 09 - 15 - 16 - 25 - 37 - 38
+  Jugada #5: 02 - 11 - 12 - 33 - 37 - 40
