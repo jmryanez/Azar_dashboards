@@ -1,0 +1,50 @@
+{
+  "metodo": "METODO_3_SUPER_POOL_WHEELING",
+  "juego": "LOTO_6_DE_41",
+  "total_sorteos_evaluados": 1649,
+  "super_pool_14": [
+    "05 - 08 - 09 - 11 - 12 - 15 - 22 - 23 - 26 - 27 - 33 - 38 - 39 - 40"
+  ],
+  "super_pool_numbers": [
+    5,
+    8,
+    9,
+    11,
+    12,
+    15,
+    22,
+    23,
+    26,
+    27,
+    33,
+    38,
+    39,
+    40
+  ],
+  "jugada_titular_individual": {
+    "aciertos_promedio": 0.868,
+    "esperanza_azar": 0.878,
+    "3_aciertos_ternas": 40,
+    "4_aciertos_cuaternas": 2,
+    "5_aciertos_quinas": 0,
+    "6_aciertos_loto": 0
+  },
+  "portafolio_5_boletos": {
+    "aciertos_maximos_promedio": 1.653,
+    "3_aciertos_ternas": 204,
+    "4_aciertos_cuaternas": 15,
+    "5_aciertos_quinas": 0,
+    "6_aciertos_loto": 0
+  },
+  "ultimo_sorteo_base": "5501",
+  "proximo_sorteo_proyectado": "#5502",
+  "fecha_proximo_sorteo": "Próximo sorteo oficial (21:00 CLT)",
+  "propuesta_maestra_titular": "05 - 08 - 09 - 11 - 12 - 15",
+  "portafolio_proximo_sorteo": [
+    "05 - 08 - 09 - 11 - 12 - 15",
+    "05 - 08 - 22 - 23 - 26 - 27",
+    "09 - 11 - 33 - 38 - 39 - 40",
+    "05 - 11 - 15 - 23 - 27 - 39",
+    "08 - 09 - 12 - 26 - 38 - 40"
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "metodo": "METODO_2_MINIMA_ENTROPIA_GAUSSIANA",
+  "juego": "LOTO_6_DE_41",
+  "total_sorteos_evaluados": 1649,
+  "jugada_titular_individual": {
+    "aciertos_promedio": 0.898,
+    "esperanza_azar": 0.878,
+    "3_aciertos_ternas": 57,
+    "4_aciertos_cuaternas": 0,
+    "5_aciertos_quinas": 0,
+    "6_aciertos_loto": 0
+  },
+  "portafolio_5_boletos": {
+    "aciertos_maximos_promedio": 1.458,
+    "3_aciertos_ternas": 144,
+    "4_aciertos_cuaternas": 11,
+    "5_aciertos_quinas": 0,
+    "6_aciertos_loto": 0
+  },
+  "ultimo_sorteo_base": "5501",
+  "proximo_sorteo_proyectado": "#5502",
+  "fecha_proximo_sorteo": "Próximo sorteo oficial (21:00 CLT)",
+  "propuesta_maestra_titular": "04 - 12 - 13 - 22 - 31 - 39",
+  "portafolio_proximo_sorteo": [
+    "04 - 12 - 13 - 22 - 31 - 39",
+    "04 - 11 - 13 - 22 - 27 - 39",
+    "04 - 12 - 13 - 22 - 26 - 39",
+    "08 - 11 - 13 - 18 - 29 - 31",
+    "08 - 11 - 14 - 17 - 22 - 39"
+  ]
+}

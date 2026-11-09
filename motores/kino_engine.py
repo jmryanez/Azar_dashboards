@@ -32,9 +32,13 @@ AUDIT_CSV_PATH = os.path.join(AUDIT_DIR, "historial_walkforward_kino.csv")
 REPORT_PATH = os.path.join(AUDIT_DIR, "propuestas_kino.txt")
 
 def parse_kino_data(filepath: str) -> List[Dict]:
-    """Carga nativa e íntegra de resultados_kino.xlsm sin dependencias externas."""
+    """Carga nativa e íntegra de resultados_kino.xlsm o .xlsx sin dependencias externas."""
     if not os.path.exists(filepath):
-        raise FileNotFoundError(f"Archivo Kino no encontrado en: {filepath}")
+        alt = filepath.replace('.xlsm', '.xlsx') if filepath.endswith('.xlsm') else filepath.replace('.xlsx', '.xlsm')
+        if os.path.exists(alt):
+            filepath = alt
+        else:
+            raise FileNotFoundError(f"Archivo Kino no encontrado en: {filepath}")
 
     with zipfile.ZipFile(filepath, 'r') as z:
         shared_strings = []
@@ -60,6 +64,10 @@ def parse_kino_data(filepath: str) -> List[Dict]:
                 if t_attr == 's' and val.isdigit():
                     idx = int(val)
                     val = shared_strings[idx] if idx < len(shared_strings) else val
+                elif t_attr == 'inlineStr' or not val:
+                    t_el = c.find('.//main:t', ns)
+                    if t_el is not None and t_el.text:
+                        val = t_el.text
                 row_dict[col_letter] = val
             if row_dict:
                 rows.append(row_dict)

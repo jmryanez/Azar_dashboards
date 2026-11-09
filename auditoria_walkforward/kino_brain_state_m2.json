@@ -1,0 +1,36 @@
+{
+  "metodo": "METODO_2_MINIMA_ENTROPIA_ESPACIAL",
+  "juego": "KINO_14_DE_25",
+  "total_sorteos_evaluados": 3203,
+  "carton_titular_individual": {
+    "aciertos_promedio": 7.974,
+    "esperanza_azar": 7.84,
+    "10_aciertos": 287,
+    "11_aciertos_premio": 64,
+    "12_aciertos_premio": 10,
+    "13_aciertos_premio": 0,
+    "14_aciertos_pleno": 0,
+    "15_aciertos_pleno": 0
+  },
+  "portafolio_5_cartones": {
+    "aciertos_maximos_promedio": 8.758,
+    "10_aciertos": 586,
+    "11_aciertos_premio": 175,
+    "12_aciertos_premio": 27,
+    "13_aciertos_premio": 0,
+    "14_aciertos_pleno": 0,
+    "15_aciertos_pleno": 0
+  },
+  "ultimo_sorteo_base": "3302",
+  "proximo_sorteo_proyectado": "#3303",
+  "fecha_proximo_sorteo": "Próximo sorteo oficial (22:30 CLT)",
+  "carton_maestro_titular": "01 - 02 - 05 - 07 - 08 - 09 - 11 - 13 - 14 - 17 - 18 - 19 - 20 - 24",
+  "ausentes_maestros_titular": "03 - 04 - 06 - 10 - 12 - 15 - 16 - 21 - 22 - 23 - 25",
+  "portafolio_proximo_sorteo": [
+    "01 - 02 - 05 - 07 - 08 - 09 - 11 - 13 - 14 - 17 - 18 - 19 - 20 - 24",
+    "01 - 02 - 05 - 07 - 09 - 10 - 11 - 13 - 14 - 17 - 18 - 19 - 20 - 24",
+    "01 - 02 - 05 - 07 - 08 - 09 - 10 - 11 - 13 - 17 - 18 - 19 - 20 - 24",
+    "01 - 02 - 06 - 08 - 09 - 11 - 13 - 14 - 17 - 18 - 19 - 20 - 23 - 24",
+    "01 - 02 - 03 - 05 - 07 - 09 - 10 - 11 - 13 - 14 - 17 - 18 - 19 - 24"
+  ]
+}

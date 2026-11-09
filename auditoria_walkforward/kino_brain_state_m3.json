@@ -1,0 +1,59 @@
+{
+  "metodo": "METODO_3_SUPER_POOL_18_WHEELING",
+  "juego": "KINO_14_DE_25",
+  "total_sorteos_evaluados": 3203,
+  "super_pool_18": [
+    "01 - 02 - 05 - 06 - 07 - 08 - 09 - 10 - 11 - 13 - 14 - 15 - 16 - 17 - 18 - 19 - 20 - 24"
+  ],
+  "super_pool_numbers": [
+    1,
+    2,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    24
+  ],
+  "carton_titular_individual": {
+    "aciertos_promedio": 7.986,
+    "esperanza_azar": 7.84,
+    "10_aciertos": 294,
+    "11_aciertos_premio": 57,
+    "12_aciertos_premio": 9,
+    "13_aciertos_premio": 1,
+    "14_aciertos_pleno": 0,
+    "15_aciertos_pleno": 0
+  },
+  "portafolio_5_cartones": {
+    "aciertos_maximos_promedio": 8.998,
+    "10_aciertos": 750,
+    "11_aciertos_premio": 218,
+    "12_aciertos_premio": 22,
+    "13_aciertos_premio": 2,
+    "14_aciertos_pleno": 0,
+    "15_aciertos_pleno": 0
+  },
+  "ultimo_sorteo_base": "3302",
+  "proximo_sorteo_proyectado": "#3303",
+  "fecha_proximo_sorteo": "Próximo sorteo oficial (22:30 CLT)",
+  "carton_maestro_titular": "01 - 02 - 05 - 06 - 07 - 08 - 09 - 10 - 11 - 13 - 14 - 15 - 16 - 17",
+  "ausentes_maestros_titular": "03 - 04 - 12 - 18 - 19 - 20 - 21 - 22 - 23 - 24 - 25",
+  "portafolio_proximo_sorteo": [
+    "01 - 02 - 05 - 06 - 07 - 08 - 09 - 10 - 11 - 13 - 14 - 15 - 16 - 17",
+    "01 - 02 - 05 - 06 - 07 - 08 - 09 - 10 - 11 - 13 - 18 - 19 - 20 - 24",
+    "05 - 06 - 07 - 08 - 09 - 10 - 11 - 13 - 14 - 15 - 18 - 19 - 20 - 24",
+    "01 - 02 - 05 - 06 - 09 - 10 - 11 - 13 - 14 - 15 - 16 - 17 - 20 - 24",
+    "07 - 08 - 09 - 10 - 11 - 13 - 14 - 15 - 16 - 17 - 18 - 19 - 20 - 24"
+  ]
+}
